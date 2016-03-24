@@ -16,17 +16,17 @@
 	});
 
 	// listener, whenever the server emits 'updaterooms', this updates the room the client is in
-	socket.on('updaterooms', function(rooms, current_room) {
-		$('#rooms').empty();
-		$.each(rooms, function(key, value) {
-			if(value == current_room){
-				$('#rooms').append('<div>' + value + '</div>');
-			}
-			else {
-				$('#rooms').append('<div><a href="#" onclick="switchRoom(\''+value+'\')">' + value + '</a></div>');
-			}
-		});
-	});
+	// socket.on('updaterooms', function(rooms, current_room) {
+	// 	$('#rooms').empty();
+	// 	$.each(rooms, function(key, value) {
+	// 		if(value == current_room){
+	// 			$('#rooms').append('<div>' + value + '</div>');
+	// 		}
+	// 		else {
+	// 			$('#rooms').append('<div><a href="#" onclick="switchRoom(\''+value+'\')">' + value + '</a></div>');
+	// 		}
+	// 	});
+	// });
 
 	socket.on('setimage', function(image_name) {
 		$('#imagepreview').attr("src", "resources/" + image_name);
@@ -57,10 +57,12 @@
 	});
 
 </script>
+<!-- 
 <div style="float:left;width:100px;border-right:1px solid black;height:300px;padding:10px;overflow:scroll-y;">
 	<b>ROOMS</b>
 	<div id="rooms"></div>
 </div>
+ -->
 <img id="imagepreview" src="" width="300px">
 <div style="float:left;width:300px;height:250px;overflow:scroll-y;padding:10px;">
 	

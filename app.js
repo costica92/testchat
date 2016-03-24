@@ -1,3 +1,5 @@
+
+// create server
 var express = require('express')
   , app = express()
   , http = require('http')
@@ -21,30 +23,36 @@ var images = ['car.png', 'dog.png', 'flower.png'];
 
 // rooms which are currently available in chat
 
-
-function get_room() {
-	
-}
-
 io.sockets.on('connection', function (socket) {
 	
+	console.log('______________________________________________');
 	console.log('User connected');
 
 	// when the client emits 'adduser', this listens and executes
 	socket.on('adduser', function(username){
+
+		var joiningRoom = roomToJoin();
+
 		// store the username in the socket session for this client
 		socket.username = username;
 		// store the room name in the socket session for this client
-		socket.room = 'room1';
+		socket.room = joiningRoom;
 		// add the client's username to the global list
 		usernames[username] = username;
 		// send client to room 1
-		socket.join('room1');
+		socket.join(joiningRoom);
 		// echo to client they've connected
-		socket.emit('updatechat', 'SERVER', 'you have connected to room1');
+		socket.emit('updatechat', 'SERVER', 'you have connected <b>' + socket.room +'</b>');
 		// echo to room 1 that a person has connected to their room
-		socket.broadcast.to('room1').emit('updatechat', 'SERVER', username + ' has connected to this room');
-		socket.emit('updaterooms', rooms, 'room1');
+		socket.broadcast.to(joiningRoom).emit('updatechat', 'SERVER', username + ' has connected to this room');
+		// socket.emit('updaterooms', rooms, socket.room);
+
+		console.log("PEOPLE WAITING=" + rooms[joiningRoom].peopleJoined);
+
+		console.log("[adduser] joiningRoom=" + joiningRoom)
+		rooms[joiningRoom].peopleJoined = rooms[joiningRoom].peopleJoined+1;
+		
+		console.log("PEOPLE JOINED=" + rooms[joiningRoom].peopleJoined);
 
 		setImageForRoom(socket.room);
 	});
@@ -66,7 +74,7 @@ io.sockets.on('connection', function (socket) {
 		// update socket session room title
 		socket.room = newroom;
 		socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username+' has joined this room');
-		socket.emit('updaterooms', rooms, newroom);
+		// socket.emit('updaterooms', rooms, newroom);
 
 		setImageForRoom(newroom);
 		
@@ -86,7 +94,7 @@ io.sockets.on('connection', function (socket) {
 				image_name = "flower.jpg";
 			break;
 			default:
-			breakl
+			break;
 		}
 		socket.emit('setimage', image_name);
 	}
@@ -105,4 +113,45 @@ io.sockets.on('connection', function (socket) {
 
 
 // ROOM MANAGER
-var 
+function Room() {
+	var name;
+	var peopleJoined;
+	var imageSource;
+};
+
+var rooms = {};
+
+function  roomToJoin() {
+
+	console.log("[roomToJoin] rooms.length=" + arrLenght(rooms));
+
+
+	for (x in rooms) {
+		if (rooms[x].peopleJoined < 2) {
+			console.log("[roomToJoin] Joining to existing room name="+rooms[x].name+", people joined=" + rooms[x].peopleJoined);
+			return rooms[x].name;
+		}
+	}	
+
+	
+	// create new room
+	var newroom = new Room();
+	newroom.imageSource = "dog.png";
+	newroom.name = "newroom"+arrLenght(rooms);
+	newroom.peopleJoined = 0;
+
+	rooms[newroom.name] = newroom;
+
+	console.log("[roomToJoin] Created new room name="+rooms[newroom.name].name+", people joined=" + rooms[newroom.name].peopleJoined);
+	console.log("[roomToJoin] rooms.length=" + arrLenght(rooms));
+
+	return newroom.name;	
+}
+
+function arrLenght(array) {
+	return Object.keys(array).length;
+}
+
+
+
+

@@ -18,9 +18,6 @@ console.log('Server Started');
 // usernames which are currently connected to the chat
 var usernames = {};
 
-// images to dispaly
-var images = ['car.png', 'dog.png', 'flower.png'];
-
 // rooms which are currently available in chat
 
 io.sockets.on('connection', function (socket) {
@@ -54,7 +51,7 @@ io.sockets.on('connection', function (socket) {
 		
 		console.log("PEOPLE JOINED=" + rooms[joiningRoom].peopleJoined);
 
-		setImageForRoom(socket.room);
+		setImageForRoom(joiningRoom);
 	});
 	
 	// when the client emits 'sendchat', this listens and executes
@@ -81,22 +78,11 @@ io.sockets.on('connection', function (socket) {
 	});
 	
 	function setImageForRoom(room) {
-		// set image
-		var image_name = 'dog.png';
-		switch (room) {
-			case 'room1':
-				image_name = "dog.png";	
-			break;
-			case 'room2':
-				image_name = "car.png";
-			break;
-			case 'room3':
-				image_name = "flower.jpg";
-			break;
-			default:
-			break;
-		}
-		socket.emit('setimage', image_name);
+		
+		var img = rooms[room].imageSource
+
+
+		socket.emit('setimage', img);
 	}
 
 	// when the user disconnects.. perform this
@@ -132,11 +118,10 @@ function  roomToJoin() {
 			return rooms[x].name;
 		}
 	}	
-
 	
 	// create new room
 	var newroom = new Room();
-	newroom.imageSource = "dog.png";
+	newroom.imageSource = randImage();
 	newroom.name = "newroom"+arrLenght(rooms);
 	newroom.peopleJoined = 0;
 
@@ -150,6 +135,14 @@ function  roomToJoin() {
 
 function arrLenght(array) {
 	return Object.keys(array).length;
+}
+
+function randImage() {
+	// images to dispaly
+	var images = ['car.png', 'dog.png', 'flower.jpg'];
+	var x = Math.floor(Math.random() * images.length);
+	console.log("[randImage] x="+x+" image=" + images[x]);
+	return images[x];
 }
 
 

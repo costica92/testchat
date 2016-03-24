@@ -4,7 +4,19 @@ var express = require('express')
   , app = express()
   , http = require('http')
   , server = http.createServer(app)
-  , io = require('socket.io').listen(server);
+  , io = require('socket.io').listen(server)
+  , mysql = require('mysql'),
+  , connection = mysql.createConnection({
+  	host : 'localhost',
+  	user : 'me',
+  	password : '',
+  	database : 'chattest'
+  });
+
+connection.connect();
+// TODO: - mysql connection
+// https://github.com/felixge/node-mysql
+
 
 server.listen(8080);
 
